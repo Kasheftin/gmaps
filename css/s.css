@@ -1,0 +1,22 @@
+
+.header,.menu-block,.map-container {
+	border: 1px solid #dddddd;
+	border-radius: 4px;
+	margin-bottom: 20px;
+	padding: 15px;
+}
+
+.header {
+	background-color: #eeeeee;
+	margin-top: 20px;
+}
+
+.map {
+	background-color: #eeeeee;
+	height: 500px;
+}
+
+input.form-control[type="number"] {
+	text-align: right;
+	margin-bottom: 5px;
+}

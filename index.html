@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="We consider several ways to show animated google maps markers. They are: native markers, custom div overlay and custom canvas overlay. Perfomance measuring is based on requestAnimationFrame method.">
+    <meta name="author" content="Alexey Kuznetsov">
+    <title>Markers animation test</title>
+    <link rel="stylesheet" media="screen" href="/lib/bootstrap-3.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" media="screen" href="/css/s.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="/lib/bootstrap-3.0.0/assets/js/html5shiv.js"></script>
+      <script src="/lib/bootstrap-3.0.0/assets/js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container" style="display:none;" data-bind="visible:isReady">
+      <div class="header">
+        <h3>Markers animation test</h3>
+        <p>
+          We consider several ways to show animated google maps markers. 
+          They are: native markers, custom div overlay and custom canvas overlay.
+          Perfomance measuring is based on requestAnimationFrame method.
+        </p>
+      </div>
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="menu-block">
+            <form class="form-horizontal" role="form">
+              <fieldset>
+                <legend>Draw settings</legend>
+                <div class="form-group">
+                  <label class="col-lg-4 control-label" for="engine">Draw engine</label>
+                  <div class="col-lg-3">
+                    <select class="form-control" id="engine" data-bind="options:engines,value:engine"></select>
+                  </div>
+                </div>
+                <!-- ko if: engine() == "native" -->
+                  <div class="help-block">Native engine uses google maps markers and google maps polylines as markers tracks.</div>
+                <!-- /ko -->
+                <!-- ko if: engine() == "divs" -->
+                  <div class="help-block">Div engine uses custom overlay and draws each marker as a small div, tracks (if shown) use native google maps polylines.</div>
+                <!-- /ko -->
+                <!-- ko if: engine() == "canvas" -->
+                  <div class="help-block">Canvas engine uses one big canvas layer as a custom overlay, that refreshes and redraws all markers and tracks every frame.</div>
+                <!-- /ko -->                  
+                <div class="checkbox"><label><input type="checkbox" data-bind="checked:showTracks"> Show tracks</label></div>
+                <div class="checkbox"><label><input type="checkbox" data-bind="checked:showBoundingBox"> Show bounding box</label></div>
+              </fieldset>
+            </form>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="menu-block">
+            <form class="form-horizontal" role="form">
+              <fieldset>
+                <legend>Markers settings</legend>
+                <div class="form-group">
+                  <label class="col-lg-4 control-label" for="amount">Total amount</label>
+                  <div class="col-lg-3">
+                    <input type="number" class="form-control" id="amount" data-bind="value:amount,valueUpdate:'afterkeydown'">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-lg-4 control-label">TopLeft bound</label>
+                  <div class="col-lg-4"><input type="number" class="form-control" data-bind="value:bounds.tlLat"></div>
+                  <div class="col-lg-4"><input type="number" class="form-control" data-bind="value:bounds.tlLng"></div>
+                </div>
+                <div class="form-group">
+                  <label class="col-lg-4 control-label">Bot.Right bound</label>
+                  <div class="col-lg-4"><input type="number" class="form-control" data-bind="value:bounds.brLat"></div>
+                  <div class="col-lg-4"><input type="number" class="form-control" data-bind="value:bounds.brLng"></div>
+                </div>
+                <div class="form-group">
+                  <label class="col-lg-4 control-label">Speed and angle</label>
+                  <div class="col-lg-4">
+                    <input type="number" class="form-control" data-bind="value:speed">
+                  </div>
+                  <div class="col-lg-4">
+                    <input type="number" class="form-control" data-bind="value:angle">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-lg-4 control-label" for="prob">Move prob.</label>
+                  <div class="col-lg-3">
+                    <input type="number" class="form-control" id="prob" data-bind="value:prob">
+                  </div>
+                </div>
+              </fieldset>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="menu-block">
+        <form class="form-horizontal" role="form">
+          <fieldset>
+            <legend>Measurer</legend>
+            <div class="clearfix">
+              <div class="pull-left">
+                <button class="btn btn-primary">Play</button>
+              </div>
+              <div class="pull-right">
+                <button class="btn btn-default">Center map on bounds</button>
+                <button class="btn btn-default">Reset tracks</button>
+                <button class="btn btn-default">Reset markers</button>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+      <div class="map-container">
+        <div id="map" class="map"></div>
+      </div>
+    </div>
+    <script type="text/javascript" src="/lib/require-2.1.8.min.js" data-main="/js/init"></script>
+  </body>
+</html>
