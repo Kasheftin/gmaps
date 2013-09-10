@@ -15,7 +15,7 @@
     <![endif]-->
   </head>
   <body>
-    <div class="container" style="display:none;" data-bind="visible:isReady">
+    <div class="container" style="display:none;opacity:0;" data-bind="visible:isReady,style:{opacity:isVisible()?'1':'0'}">
       <div class="header">
         <h3>Markers animation test</h3>
         <p>
@@ -33,20 +33,25 @@
                 <div class="form-group">
                   <label class="col-lg-4 control-label" for="engine">Draw engine</label>
                   <div class="col-lg-3">
-                    <select class="form-control" id="engine" data-bind="options:engines,value:engine"></select>
+                    <select class="form-control" id="engine" data-bind="options:engines,value:engineName"></select>
                   </div>
                 </div>
-                <!-- ko if: engine() == "native" -->
+                <!-- ko if: engineName() == "native" -->
                   <div class="help-block">Native engine uses google maps markers and google maps polylines as markers tracks.</div>
                 <!-- /ko -->
-                <!-- ko if: engine() == "divs" -->
+                <!-- ko if: engineName() == "divs" -->
                   <div class="help-block">Div engine uses custom overlay and draws each marker as a small div, tracks (if shown) use native google maps polylines.</div>
+                  <div class="checkbox"><label><input type="checkbox" data-bind="checked:optimizeGeoCalculations"> Optimize geo calculations</label></div>
                 <!-- /ko -->
-                <!-- ko if: engine() == "canvas" -->
+                <!-- ko if: engineName() == "canvas" -->
                   <div class="help-block">Canvas engine uses one big canvas layer as a custom overlay, that refreshes and redraws all markers and tracks every frame.</div>
+                  <div class="checkbox"><label><input type="checkbox" data-bind="checked:optimizeGeoCalculations"> Optimize geo calculations</label></div>
+                  <div class="checkbox"><label><input type="checkbox" data-bind="checked:prepareIcons"> Prepare and cache canvas icons</label></div>
+                  <div class="checkbox"><label><input type="checkbox" data-bind="checked:addHoverOverlay"> Add div overlay for markers selecting support</label></div>
                 <!-- /ko -->                  
                 <div class="checkbox"><label><input type="checkbox" data-bind="checked:showTracks"> Show tracks</label></div>
-                <div class="checkbox"><label><input type="checkbox" data-bind="checked:showBoundingBox"> Show bounding box</label></div>
+                <div class="checkbox"><label><input type="checkbox" data-bind="checked:animate"> Animate markers</label></div>
+                <div class="checkbox"><label><input type="checkbox" data-bind="checked:showBounds"> Show bounds</label></div>
               </fieldset>
             </form>
           </div>
@@ -59,7 +64,7 @@
                 <div class="form-group">
                   <label class="col-lg-4 control-label" for="amount">Total amount</label>
                   <div class="col-lg-3">
-                    <input type="number" class="form-control" id="amount" data-bind="value:amount,valueUpdate:'afterkeydown'">
+                    <input type="number" class="form-control" id="amount" data-bind="value:amount">
                   </div>
                 </div>
                 <div class="form-group">
@@ -82,9 +87,12 @@
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="col-lg-4 control-label" for="prob">Move prob.</label>
-                  <div class="col-lg-3">
-                    <input type="number" class="form-control" id="prob" data-bind="value:prob">
+                  <label class="col-lg-4 control-label" for="prob">Move & hold prob.</label>
+                  <div class="col-lg-4">
+                    <input type="number" class="form-control" id="prob" data-bind="value:moveProb">
+                  </div>
+                  <div class="col-lg-4">
+                    <input type="number" class="form-control" id="prob" data-bind="value:holdProb">
                   </div>
                 </div>
               </fieldset>
@@ -98,12 +106,13 @@
             <legend>Measurer</legend>
             <div class="clearfix">
               <div class="pull-left">
-                <button class="btn btn-primary">Play</button>
+                <button class="btn btn-primary" data-bind="click:play,visible:state()=='pause'">Play</button>
+                <button class="btn btn-primary" data-bind="click:pause,visible:state()=='play'">Pause</button>
               </div>
               <div class="pull-right">
-                <button class="btn btn-default">Center map on bounds</button>
-                <button class="btn btn-default">Reset tracks</button>
-                <button class="btn btn-default">Reset markers</button>
+                <button class="btn btn-default" data-bind="click:fitBounds">Fit bounds</button>
+                <button class="btn btn-default" data-bind="click:resetTracks">Reset tracks</button>
+                <button class="btn btn-default" data-bind="click:resetMarkers">Reset markers</button>
               </div>
             </div>
           </fieldset>
