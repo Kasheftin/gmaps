@@ -14,7 +14,7 @@ define(["knockout","underscore","gmaps","marker","eNative","utils"],function(ko,
 
 		this.isReady = ko.observable(false);
 		this.isVisible = ko.observable(false);
-		this.amount = ko.observable(50);
+		this.amount = ko.observable(1);
 		this.bounds = {
 			tlLat: ko.observable(48.740),
 			tlLng: ko.observable(19.140),
@@ -31,6 +31,7 @@ define(["knockout","underscore","gmaps","marker","eNative","utils"],function(ko,
 		this.prepareIcons = ko.observable(true);
 		this.addHoverOverlay = ko.observable(true);
 		this.animate = ko.observable(true);
+		this.fps = ko.observable(0);
 
 		this.key = ko.observable(Math.floor((new Date).getTime()/60000)*60000);
 
@@ -68,7 +69,8 @@ define(["knockout","underscore","gmaps","marker","eNative","utils"],function(ko,
 			}
 			var opts = {
 				markers: self.markers,
-				map: self.map
+				map: self.map,
+				showTracks: self.showTracks
 			}
 			if (name == "native") self.engine = new NativeEngine(opts);
 		});
@@ -116,7 +118,7 @@ define(["knockout","underscore","gmaps","marker","eNative","utils"],function(ko,
 			marker.move(key);
 		});
 		if (this.engine) {
-			this.engine.render(function() {
+			this.engine.render(key,function() {
 				if (typeof callback === "function") {
 					callback();
 				}
@@ -124,6 +126,20 @@ define(["knockout","underscore","gmaps","marker","eNative","utils"],function(ko,
 		}
 		else if (typeof callback === "function") {
 			callback();
+		}
+	}
+
+	App.prototype.calculateFPS = function() {
+		var dt = Math.floor((new Date).getTime()/1000);
+		if (!this._fps) this._fps = 1;
+		if (!this._fpsDt || this._fpsDt+1<dt) this._fpsDt = dt;
+		if (this._fpsDt === dt) {
+			this._fps++;
+		}
+		else {
+			this.fps(this._fps);
+			this._fps = 1;
+			this._fpsDt = dt;
 		}
 	}
 
@@ -136,6 +152,7 @@ define(["knockout","underscore","gmaps","marker","eNative","utils"],function(ko,
 			this._key = this.key();
 		}
 		this.renderFrame(this.key(),function() {
+			self.calculateFPS();
 			if (self.state() == "play") {
 				requestAnimFrame(function() {
 					var lastUpdated = self._keyUpdatedAt;
@@ -166,6 +183,7 @@ define(["knockout","underscore","gmaps","marker","eNative","utils"],function(ko,
 		_.each(this.markers(),function(marker) {
 			marker.reset();
 		});
+		this.engine.resetTracks();
 		this.run();
 	}
 
@@ -173,6 +191,9 @@ define(["knockout","underscore","gmaps","marker","eNative","utils"],function(ko,
 		_.each(this.markers(),function(marker) {
 			marker.resetTrack();
 		});
+		if (this.engine) {
+			this.engine.resetTracks();
+		}
 		this.run();
 	}
 

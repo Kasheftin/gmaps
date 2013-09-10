@@ -108,6 +108,9 @@
               <div class="pull-left">
                 <button class="btn btn-primary" data-bind="click:play,visible:state()=='pause'">Play</button>
                 <button class="btn btn-primary" data-bind="click:pause,visible:state()=='play'">Pause</button>
+                <span data-bind="visible:state()=='play'">
+                  FPS: <span data-bind="text:fps"></span>
+                </span>
               </div>
               <div class="pull-right">
                 <button class="btn btn-default" data-bind="click:fitBounds">Fit bounds</button>

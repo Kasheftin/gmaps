@@ -4,7 +4,7 @@ define(["knockout","underscore"],function(ko,_) {
 		this.name = "Marker #" + this.id;
 		this.generatorOptions = generatorOptions;
 		this.coords = ko.observable({lat:null,lng:null,dt:null});
-		this.track = [];
+		this.track = ko.observableArray([]);
 		this.maxDt = 0;
 	} 
 
@@ -22,7 +22,7 @@ define(["knockout","underscore"],function(ko,_) {
 
 	Marker.prototype.generateCoords = function(dt) {
 		var g = this.generatorOptions;
-		var last = _.last(this.track);
+		var last = _.last(this.track());
 		for (var i = last.dt+1000; i < dt; i+=1000) {
 			if (Math.random() > g.moveProb()) continue;
 			var c = _.extend({},last,{dt:i});
@@ -44,7 +44,7 @@ define(["knockout","underscore"],function(ko,_) {
 			}
 			last = c;
 		}
-		this.maxDt = _.last(this.track).dt;
+		this.maxDt = _.last(this.track()).dt;
 	}
 
 	Marker.prototype.move = function(dt) {
@@ -54,9 +54,9 @@ define(["knockout","underscore"],function(ko,_) {
 		if (this.maxDt < dt + 30000) {
 			this.generateCoords(dt+60000);
 		}
-		for (var i = this.track.length-1; i > 0 && this.track[i].dt >= dt; i--) { }
-		var from = this.track[i];
-		var to = this.track[i+1];
+		for (var i = this.track().length-1; i > 0 && this.track()[i].dt >= dt; i--) { }
+		var from = this.track()[i];
+		var to = this.track()[i+1];
 		if (this.generatorOptions.animate()) {
 			this.coords(_.extend({},from,{
 				lat: from.lat + (to.lat-from.lat)*(dt-from.dt)/(to.dt-from.dt),
@@ -70,12 +70,14 @@ define(["knockout","underscore"],function(ko,_) {
 	}
 
 	Marker.prototype.reset = function() {
-		this.track = [];
+		this.track([]);
 		this.maxDt = 0;
 	}
 
 	Marker.prototype.resetTrack = function() {
-
+		this.track([]);
+		this.track.push(this.coords());
+		this.maxDt = this.coords().dt;
 	}
 
 	Marker.prototype.destroy = function() {
