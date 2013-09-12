@@ -36,7 +36,8 @@ define(["gmaps"],function(gmaps) {
 
 	BasicOverlay.prototype.getPixelCoordsNonOptimized = function(coords) {
 		var proj = this.getProjection();
-		return proj.fromLatLngToDivPixel(coords);
+		var coords = proj.fromLatLngToDivPixel(coords);
+		return {x:coords.x-this._pxCorner.x,y:coords.y-this._pxCorner.y};
 	} 
 
 	BasicOverlay.prototype.inViewport = function(center,radius) {
