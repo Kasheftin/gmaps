@@ -32,8 +32,10 @@
                 <legend>Draw settings</legend>
                 <div class="form-group">
                   <label class="col-lg-4 control-label" for="engine">Draw engine</label>
-                  <div class="col-lg-3">
-                    <select class="form-control" id="engine" data-bind="options:engines,value:engineName"></select>
+                  <div class="col-lg-8">
+                    <!-- ko foreach: engines -->
+                      <button type="button" class="btn btn-default" data-bind="click:$parent.selectEngine.bind($parent,$data),css:{'btn-primary':$parent.engineName()==$data},text:$data"></button>
+                    <!-- /ko -->
                   </div>
                 </div>
                 <!-- ko if: engineName() == "native" -->

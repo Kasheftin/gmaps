@@ -1,4 +1,4 @@
-define(["knockout","underscore","gmaps","marker","eNative","utils"],function(ko,_,gmaps,Marker,NativeEngine) {
+define(["knockout","underscore","gmaps","marker","eNative","eDivs","utils"],function(ko,_,gmaps,Marker,NativeEngine,DivsEngine) {
 
 	window.requestAnimFrame = (function() {
 		return  window.requestAnimationFrame       ||
@@ -70,9 +70,14 @@ define(["knockout","underscore","gmaps","marker","eNative","utils"],function(ko,
 			var opts = {
 				markers: self.markers,
 				map: self.map,
-				showTracks: self.showTracks
+				showTracks: self.showTracks,
+				optimizeGeoCalculations: self.optimizeGeoCalculations,
+				callback: function() {
+					self.run();
+				}
 			}
 			if (name == "native") self.engine = new NativeEngine(opts);
+			else if (name == "divs") self.engine = new DivsEngine(opts);
 		});
 
 		this.boundingBox = null;
@@ -97,12 +102,20 @@ define(["knockout","underscore","gmaps","marker","eNative","utils"],function(ko,
 			}
 		});
 
+		this.showTracks.subscribe(function() {
+			self.run();
+		});
+
 		this.state = ko.observable("pause");
 		this.state.subscribe(function(v) {
 			if (v == "play") {
 				self.run();
 			}
 		});
+	}
+
+	App.prototype.selectEngine = function(engineName) {
+		this.engineName(engineName);
 	}
 
 	App.prototype.fitBounds = function() {

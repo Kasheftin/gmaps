@@ -16,7 +16,7 @@ define(["gmaps","knockout","underscore"],function(gmaps,ko,_) {
 	}
 	Marker.prototype.destroy = function() {
 		this._marker.setMap(null);
-		this.hideTrack;
+		this.hideTrack();
 		this._trackModel.setMap(null);
 	}
 	Marker.prototype.drawTrack = function(key) {
@@ -58,6 +58,10 @@ define(["gmaps","knockout","underscore"],function(gmaps,ko,_) {
 			}
 		});
 		options.markers.valueHasMutated();
+		// The reason of using defer is that otherway callback runs before initialized new NativeEngine var is returned to constructor
+		if (typeof options.callback === "function") {
+			_.defer(options.callback);			
+		}
 	}
 
 	NativeEngine.prototype.render = function(key,callback) {
@@ -84,6 +88,9 @@ define(["gmaps","knockout","underscore"],function(gmaps,ko,_) {
 
 	NativeEngine.prototype.destroy = function() {
 		this.syncSubscribe.dispose();
+		_.each(this.markers,function(marker) {
+			marker.destroy();
+		});
 	}
 
 	return NativeEngine;

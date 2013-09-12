@@ -27,3 +27,16 @@ input.form-control[type="number"] {
 input[type="checkbox"]:focus {
 	outline: 0;
 }
+
+.divMarker {
+	color: #000000;
+	position: absolute;
+	background: transparent url("marker.png") 0 0 no-repeat;
+	height: 30px;
+	padding-left: 20px;
+	white-space: nowrap;
+	font: normal 15px/34px Arial !important;
+	margin-top: -30px;
+	margin-left: -14px;
+    text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
+}
