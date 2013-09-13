@@ -1,4 +1,5 @@
 define(["gmaps","knockout","underscore","./overlays/divOverlay"],function(gmaps,ko,_,DivOverlay) {
+
 	var Marker = function(m,options) {
 		this.id = m.id;
 		this.name = m.name;
@@ -8,7 +9,6 @@ define(["gmaps","knockout","underscore","./overlays/divOverlay"],function(gmaps,
 		this.optimizeGeoCalculations = options.optimizeGeoCalculations;
 		this.track = m.track;
 		this.trackN = 0;
-		this.trackKey = 0;
 		this._marker = document.createElement("div");
 		this._marker.className = "divMarker";
 		this._marker.innerHTML = this.name;
@@ -36,17 +36,14 @@ define(["gmaps","knockout","underscore","./overlays/divOverlay"],function(gmaps,
 	}
 	Marker.prototype.drawTrack = function(key) {
 		var path = this._trackModel.getPath();
-		if (key === this.trackKey) {
-			path.pop();
-			path.push(new gmaps.LatLng(this.coords().lat,this.coords().lng));
-			return;
-		}
+		// Destroy last point that is the marker current position
+		if (path.length > 0) path.pop();
 		for (var i = this.trackN; i < this.track().length; i++) {
 			if (this.track()[i].dt > key) break;
 			path.push(new gmaps.LatLng(this.track()[i].lat,this.track()[i].lng));
 		}
 		this.trackN = i;
-		this.trackKey = this.track()[i].dt;
+		// Add last point 
 		path.push(new gmaps.LatLng(this.coords().lat,this.coords().lng));
 	}
 	Marker.prototype.hideTrack = function() {
@@ -54,62 +51,60 @@ define(["gmaps","knockout","underscore","./overlays/divOverlay"],function(gmaps,
 		var path = this._trackModel.getPath();
 		path.clear();
 		this.trackN = 0;
-		this.trackKey = 0;
 	}
 
 	var DivsEngine = function(options) {
 		var self = this;
-
 		this.map = options.map;
 		this.showTracks = options.showTracks;
 		this.optimizeGeoCalculations = options.optimizeGeoCalculations;
 		this.appMarkers = options.markers;
 		this.appCallback = options.callback;
 		this.markers = [];
-
 		this.overlay = new DivOverlay({
 			map:this.map,
 			onAdd: function() {
-				self.boundsListener = gmaps.event.addListener(self.map,"bounds_changed",function() {
-					self.overlay.relayout();
-					self.render();
-				});
-				self.syncSubscribe = ko.utils.sync({
-					source: self.appMarkers,
-					target: self.markers,
-					onAdd: function(m) {
-						return new Marker(m,{
-							map: self.map,
-							overlay: self.overlay,
-							optimizeGeoCalculations: self.optimizeGeoCalculations
-						});
-					},
-					onRemove: function(m) {
-						m.destroy();
-					}
-				});
 				self.appMarkers.valueHasMutated();	
 				if (typeof self.appCallback === "function") {
 					_.defer(self.appCallback);			
 				}
 			}
 		});
-	
+		this.boundsListener = gmaps.event.addListener(this.map,"bounds_changed",function() {
+			self.overlay.relayout();
+			self.render();
+		});
+		this.syncSubscribe = ko.utils.sync({
+			source: this.appMarkers,
+			target: this.markers,
+			onAdd: function(m) {
+				return new Marker(m,{
+					map: self.map,
+					overlay: self.overlay,
+					optimizeGeoCalculations: self.optimizeGeoCalculations
+				});
+			},
+			onRemove: function(m) {
+				m.destroy();
+			}
+		});
 	}
 
 	DivsEngine.prototype.render = function(key,callback) {
 		var self = this;
 		if (!key) key = this._lastKey;
 		this._lastKey = key;
-		_.each(this.markers,function(marker) {
-			marker.move();
-			if (self.showTracks()) {
-				marker.drawTrack(key);
-			}
-			else {
-				marker.hideTrack();
-			}
-		});
+		if (this.overlay) {
+			_.each(this.markers,function(marker) {
+				marker.move();
+				if (self.showTracks()) {
+					marker.drawTrack(key);
+				}
+				else {
+					marker.hideTrack();
+				}
+			});
+		}
 		if (typeof callback === "function") {
 			callback();
 		}
@@ -127,6 +122,7 @@ define(["gmaps","knockout","underscore","./overlays/divOverlay"],function(gmaps,
 		_.each(this.markers,function(marker) {
 			marker.destroy();
 		});
+		this.overlay.setMap(null);
 	}
 
 	return DivsEngine;

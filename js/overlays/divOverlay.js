@@ -2,7 +2,6 @@ define(["gmaps","./basicOverlay"],function(gmaps,BasicOverlay) {
 
 	var DivOverlay = function(options) {
 		this._map = options.map;
-		this._container = options.container;
 		this._mapDiv = this._map.getDiv();
 		this._onAddCallback = options.onAdd;
 		this.setMap(this._map);

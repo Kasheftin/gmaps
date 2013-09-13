@@ -1,4 +1,4 @@
-define(["knockout","underscore","gmaps","marker","eNative","eDivs","utils"],function(ko,_,gmaps,Marker,NativeEngine,DivsEngine) {
+define(["knockout","underscore","gmaps","marker","eNative","eDivs","eCanvas","utils"],function(ko,_,gmaps,Marker,NativeEngine,DivsEngine,CanvasEngine) {
 
 	window.requestAnimFrame = (function() {
 		return  window.requestAnimationFrame       ||
@@ -28,8 +28,8 @@ define(["knockout","underscore","gmaps","marker","eNative","eDivs","utils"],func
 		this.showTracks = ko.observable(true);
 		this.showBounds = ko.observable(false);
 		this.optimizeGeoCalculations = ko.observable(true);
+		this.useSecondCanvas = ko.observable(true);
 		this.prepareIcons = ko.observable(true);
-		this.addHoverOverlay = ko.observable(true);
 		this.animate = ko.observable(true);
 		this.fps = ko.observable(0);
 
@@ -72,12 +72,15 @@ define(["knockout","underscore","gmaps","marker","eNative","eDivs","utils"],func
 				map: self.map,
 				showTracks: self.showTracks,
 				optimizeGeoCalculations: self.optimizeGeoCalculations,
+				useSecondCanvas: self.useSecondCanvas,
+				prepareIcons: self.prepareIcons,
 				callback: function() {
 					self.run();
 				}
 			}
 			if (name == "native") self.engine = new NativeEngine(opts);
 			else if (name == "divs") self.engine = new DivsEngine(opts);
+			else if (name == "canvas") self.engine = new CanvasEngine(opts);
 		});
 
 		this.boundingBox = null;
@@ -103,6 +106,10 @@ define(["knockout","underscore","gmaps","marker","eNative","eDivs","utils"],func
 		});
 
 		this.showTracks.subscribe(function() {
+			self.run();
+		});
+
+		this.useSecondCanvas.subscribe(function() {
 			self.run();
 		});
 
@@ -204,7 +211,7 @@ define(["knockout","underscore","gmaps","marker","eNative","eDivs","utils"],func
 		_.each(this.markers(),function(marker) {
 			marker.resetTrack();
 		});
-		if (this.engine) {
+		if (this.engine && typeof this.engine.resetTracks === "function") {
 			this.engine.resetTracks();
 		}
 		this.run();

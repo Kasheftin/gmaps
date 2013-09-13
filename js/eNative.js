@@ -1,10 +1,10 @@
 define(["gmaps","knockout","underscore"],function(gmaps,ko,_) {
+
 	var Marker = function(m,map) {
 		this.id = m.id;
 		this.coords = m.coords;
 		this.track = m.track;
 		this.trackN = 0;
-		this.trackKey = 0;
 		this._marker = new gmaps.Marker(new gmaps.LatLng(this.coords().lat,this.coords().lng));
 		this._marker.setMap(map);
 		this._trackModel = new gmaps.Polyline({
@@ -21,17 +21,14 @@ define(["gmaps","knockout","underscore"],function(gmaps,ko,_) {
 	}
 	Marker.prototype.drawTrack = function(key) {
 		var path = this._trackModel.getPath();
-		if (key === this.trackKey) {
-			path.pop();
-			path.push(new gmaps.LatLng(this.coords().lat,this.coords().lng));
-			return;
-		}
+		// Destroy last point that is the marker current position
+		if (path.length > 0) path.pop();
 		for (var i = this.trackN; i < this.track().length; i++) {
 			if (this.track()[i].dt > key) break;
 			path.push(new gmaps.LatLng(this.track()[i].lat,this.track()[i].lng));
 		}
 		this.trackN = i;
-		this.trackKey = this.track()[i].dt;
+		// Add last point 
 		path.push(new gmaps.LatLng(this.coords().lat,this.coords().lng));
 	}
 	Marker.prototype.hideTrack = function() {
@@ -39,7 +36,6 @@ define(["gmaps","knockout","underscore"],function(gmaps,ko,_) {
 		var path = this._trackModel.getPath();
 		path.clear();
 		this.trackN = 0;
-		this.trackKey = 0;
 	}
 
 	var NativeEngine = function(options) {

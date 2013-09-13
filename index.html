@@ -47,9 +47,8 @@
                 <!-- /ko -->
                 <!-- ko if: engineName() == "canvas" -->
                   <div class="help-block">Canvas engine uses one big canvas layer as a custom overlay, that refreshes and redraws all markers and tracks every frame.</div>
-                  <div class="checkbox"><label><input type="checkbox" data-bind="checked:optimizeGeoCalculations"> Optimize geo calculations</label></div>
+                  <div class="checkbox"><label><input type="checkbox" data-bind="checked:useSecondCanvas"> Use second canvas layer for storing static tracks</label></div>
                   <div class="checkbox"><label><input type="checkbox" data-bind="checked:prepareIcons"> Prepare and cache canvas icons</label></div>
-                  <div class="checkbox"><label><input type="checkbox" data-bind="checked:addHoverOverlay"> Add div overlay for markers selecting support</label></div>
                 <!-- /ko -->                  
                 <div class="checkbox"><label><input type="checkbox" data-bind="checked:showTracks"> Show tracks</label></div>
                 <div class="checkbox"><label><input type="checkbox" data-bind="checked:animate"> Animate markers</label></div>
