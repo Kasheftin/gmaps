@@ -24,7 +24,7 @@ define(["knockout","underscore","gmaps","marker","eNative","eDivs","eCanvas","eC
 		this.speed = ko.observable(0.01);
 		this.angle = ko.observable(300);
 		this.moveProb = ko.observable(1);
-		this.holdProb = ko.observable(0);
+		this.holdProb = ko.observable(0.2);
 		this.showTracks = ko.observable(true);
 		this.showBounds = ko.observable(false);
 		this.optimizeGeoCalculations = ko.observable(true);

@@ -104,6 +104,7 @@ define(["gmaps","knockout","underscore","./overlays/canvasOverlay","eCanvasMarke
 			tile.height = tile.height;				
 			tile.context.lineWidth = 3;
 		});
+		this.lines = [];
 	}
 
 	var CanvasTileEngine = function(options) {
@@ -129,9 +130,8 @@ define(["gmaps","knockout","underscore","./overlays/canvasOverlay","eCanvasMarke
 				m.destroy();
 			},
 			afterRemove: function() {
-				if (self.trackBuffer) { 
-					self.trackBuffer.reset();
-				}
+				self.resetTracks();
+				self.render();
 			}
 		});
 
@@ -160,9 +160,7 @@ define(["gmaps","knockout","underscore","./overlays/canvasOverlay","eCanvasMarke
 			self.render();
 		});	
 		this.showTracksSubscribe = this.showTracks.subscribe(function() {
-			if (self.trackBuffer) {
-				self.trackBuffer.reset();
-			}
+			self.resetTracks();
 			self.render();
 		});
 	}

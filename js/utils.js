@@ -7,24 +7,27 @@ define(["knockout"],function(ko) {
 			options.propName = "id";
 		}
 		return options.source.subscribe(function(items) {
-	    	    var rev1 = {}, rev2 = {}, values2push = [];
+    	    var rev1 = {}, rev2 = {}, values2push = [];
 
-	    	    if (items.length == 0) {
-	    	    	var targetItems = ko.utils.unwrapObservable(options.target);
-	    	    	if (targetItems.length == 0) return;
-	    	    	if (typeof options.onRemove === "function") {
- 	    	    	for (var i = 0, l = targetItems.length; i < l; i++) {
- 	    	    		options.onRemove(targetItems[i]);
- 	    	    	} 	    	    		
-	    	    	}
-	    		if (ko.isObservable(options.target)) {
-	    			options.target([]);
-	    		}
-	    		else {
-                                options.target.splice(0,options.target.length);
-	    		}
-  	    		return;
-	    	    }
+    	    if (items.length == 0) {
+    	    	var targetItems = ko.utils.unwrapObservable(options.target);
+    	    	if (targetItems.length == 0) return;
+    	    	if (typeof options.onRemove === "function") {
+	    	    	for (var i = 0, l = targetItems.length; i < l; i++) {
+	    	    		options.onRemove(targetItems[i]);
+	    	    	} 	    	    		
+    	    	}
+        		if (ko.isObservable(options.target)) {
+         			options.target([]);
+                }
+                else {
+                    options.target.splice(0,options.target.length);
+    		    }
+                if (typeof options.afterRemove === "function") {
+                    options.afterRemove();
+                }
+	    		return;
+    	    }
 
         	for (var i = 0, l = items.length; i < l; i++) {
         		var propValue = ko.utils.unwrapObservable(items[i][options.propName]);
