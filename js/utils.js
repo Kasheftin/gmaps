@@ -48,6 +48,7 @@ define(["knockout"],function(ko) {
         			options.afterAdd();
         		}
         	}
+            var callAfterRemove = false;
         	for (var l = targetItems.length, i = l-1; i >= 0; i--) {
         		var propValue = ko.utils.unwrapObservable(targetItems[i][options.propName]);
         		if (rev1[propValue] === undefined) {
@@ -55,8 +56,12 @@ define(["knockout"],function(ko) {
         				options.onRemove(targetItems[i]);
         			}
         			options.target.splice(i,1);
+                    callAfterRemove = true;
         		}
         	}
+            if (callAfterRemove && typeof options.afterRemove === "function") {
+                options.afterRemove();
+            }
 		});
 	}
 });

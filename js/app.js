@@ -1,4 +1,4 @@
-define(["knockout","underscore","gmaps","marker","eNative","eDivs","eCanvas","utils"],function(ko,_,gmaps,Marker,NativeEngine,DivsEngine,CanvasEngine) {
+define(["knockout","underscore","gmaps","marker","eNative","eDivs","eCanvas","eCanvasTile","utils"],function(ko,_,gmaps,Marker,NativeEngine,DivsEngine,CanvasEngine,CanvasTileEngine) {
 
 	window.requestAnimFrame = (function() {
 		return  window.requestAnimationFrame       ||
@@ -24,7 +24,7 @@ define(["knockout","underscore","gmaps","marker","eNative","eDivs","eCanvas","ut
 		this.speed = ko.observable(0.01);
 		this.angle = ko.observable(300);
 		this.moveProb = ko.observable(1);
-		this.holdProb = ko.observable(0.3);
+		this.holdProb = ko.observable(0);
 		this.showTracks = ko.observable(true);
 		this.showBounds = ko.observable(false);
 		this.optimizeGeoCalculations = ko.observable(true);
@@ -59,7 +59,7 @@ define(["knockout","underscore","gmaps","marker","eNative","eDivs","eCanvas","ut
 			self.run();
 		});
 
-		this.engines = ["native","divs","canvas"];
+		this.engines = ["native","divs","canvas","canvasTile"];
 		this.engineName = ko.observable(_.first(this.engines));
 		this.engine = null;
 		this.engineName.subscribe(function(name) {
@@ -81,6 +81,7 @@ define(["knockout","underscore","gmaps","marker","eNative","eDivs","eCanvas","ut
 			if (name == "native") self.engine = new NativeEngine(opts);
 			else if (name == "divs") self.engine = new DivsEngine(opts);
 			else if (name == "canvas") self.engine = new CanvasEngine(opts);
+			else if (name == "canvasTile") self.engine = new CanvasTileEngine(opts);
 		});
 
 		this.boundingBox = null;
