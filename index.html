@@ -49,11 +49,13 @@
                   <div class="help-block">Canvas engine uses one big canvas layer as a custom overlay, that refreshes and redraws all markers and tracks every frame.</div>
                   <div class="checkbox"><label><input type="checkbox" data-bind="checked:useSecondCanvas"> Use second canvas layer for storing static tracks</label></div>
                   <div class="checkbox"><label><input type="checkbox" data-bind="checked:prepareIcons"> Prepare and cache canvas icons</label></div>
+                  <div class="checkbox"><label><input type="checkbox" data-bind="checked:optimizeGeoCalculations"> Optimize geo calculations</label></div>
                 <!-- /ko -->          
                 <!-- ko if: engineName() == "canvasTile" -->
-                  <div class="help-block">Canvas tile engine splits one big canvas to tiles and uses custom map type.</div>
+                  <div class="help-block">Canvas tile engine splits one big canvas to tiles and uses custom map type. The advantage is that tiles with tracks do not redraw on map drag.</div>
                   <div class="checkbox"><label><input type="checkbox" data-bind="checked:useSecondCanvas"> Use canvas tile layer for storing static tracks</label></div>
                   <div class="checkbox"><label><input type="checkbox" data-bind="checked:prepareIcons"> Prepare and cache canvas icons</label></div>
+                  <div class="checkbox"><label><input type="checkbox" data-bind="checked:optimizeGeoCalculations"> Optimize geo calculations</label></div>
                 <!-- /ko -->          
                 <div class="checkbox"><label><input type="checkbox" data-bind="checked:showTracks"> Show tracks</label></div>
                 <div class="checkbox"><label><input type="checkbox" data-bind="checked:animate"> Animate markers</label></div>

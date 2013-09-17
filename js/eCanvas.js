@@ -4,6 +4,7 @@ define(["gmaps","knockout","underscore","./overlays/canvasOverlay","eCanvasMarke
 		var self = this;
 		this.map = options.map;
 		this.showTracks = options.showTracks;
+		this.optimizeGeoCalculations = options.optimizeGeoCalculations;
 		this.useSecondCanvas = options.useSecondCanvas;
 		this.prepareIcons = options.prepareIcons;
 		this.appMarkers = options.markers;
@@ -16,7 +17,8 @@ define(["gmaps","knockout","underscore","./overlays/canvasOverlay","eCanvasMarke
 			onAdd: function(m) {
 				return new Marker(m,{
 					map: self.map,
-					prepareIcons: self.prepareIcons
+					prepareIcons: self.prepareIcons,
+					optimizeGeoCalculations: self.optimizeGeoCalculations
 				});
 			},
 			onRemove: function(m) {
@@ -60,6 +62,13 @@ define(["gmaps","knockout","underscore","./overlays/canvasOverlay","eCanvasMarke
 		});
 		this.showTracksSubscribe = this.showTracks.subscribe(function() {
 			self.resetStaticOverlay();
+			self.render();
+		});
+		this.optimizeGeoCalculationsSubscribe = this.optimizeGeoCalculations.subscribe(function() {
+			_.each(self.markers,function(marker) {
+				marker.updateCoordsRequired = true;
+			});
+			self.resetTracks();
 			self.render();
 		});
 	}
@@ -122,6 +131,7 @@ define(["gmaps","knockout","underscore","./overlays/canvasOverlay","eCanvasMarke
 		this.overlay.setMap(null);
 		this.resetStaticOverlay();
 		this.staticOverlay.setMap(null);
+		this.optimizeGeoCalculationsSubscribe.dispose();
 	}
 
 	return CanvasEngine;

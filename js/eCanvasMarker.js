@@ -7,6 +7,7 @@ define(["gmaps","underscore"],function(gmaps,_) {
 		this.coords = m.coords;
 		this.map = options.map;
 		this.prepareIcons = options.prepareIcons;
+		this.optimizeGeoCalculations = options.optimizeGeoCalculations;
 		this.track = m.track;
 		this.preparedCoords = null;
 		this.preparedTrack = [];
@@ -45,22 +46,27 @@ define(["gmaps","underscore"],function(gmaps,_) {
 		ic.font = "14px arial";
 		ic.strokeText(this.name,this.iconCenter.x+5,this.iconCenter.y-8);
 		ic.fillText(this.name,this.iconCenter.x+5,this.iconCenter.y-8);
-		this.updateIconRequired = false;
 	}
 
-	Marker.prototype._updateCoords = function() {
-		this.preparedCoords = this.map.getProjection().fromLatLngToPoint(new gmaps.LatLng(this.coords().lat,this.coords().lng));
-		this.updateCoordsRequired = false;
+	Marker.prototype._getPreparedCoords = function(map,overlay,lat,lng) {
+		if (this.optimizeGeoCalculations()) {
+			return overlay.performSimpleFakeCoordsCalculation(lat,lng);
+		}
+		else {
+			return map.getProjection().fromLatLngToPoint(new gmaps.LatLng(lat,lng));
+		}		
 	}
 
 	Marker.prototype.draw = function(overlay,context,type,key) {
 		if (this.updateCoordsRequired) {
-			this._updateCoords();
+			this.preparedCoords = this._getPreparedCoords(this.map,overlay,this.coords().lat,this.coords().lng);
+			this.updateCoordsRequired = false;
 		}
 		var p = overlay.abs2rel(this.preparedCoords,this.map.getZoom());
 		if (type == "icon") {
 			if (this.updateIconRequired || !this.prepareIcons()) {
 				this._prepareIcon();
+				this.updateIconRequired = false;
 			}
 			context.drawImage(this.iconCanvas,p.x-this.iconCenter.x,p.y-this.iconCenter.y);
 		}
@@ -69,7 +75,7 @@ define(["gmaps","underscore"],function(gmaps,_) {
 			for (var i = this.trackN; i < this.track().length; i++) {
 				var t = this.track()[i]		
 				if (t.dt > key) break;
-				this.preparedTrack.push(this.map.getProjection().fromLatLngToPoint(new gmaps.LatLng(t.lat,t.lng)));
+				this.preparedTrack.push(this._getPreparedCoords(this.map,overlay,t.lat,t.lng));
 			}
 			this.trackN = i;
 
@@ -92,7 +98,7 @@ define(["gmaps","underscore"],function(gmaps,_) {
 					var t = overlay.abs2rel(this.preparedTrack[i],this.map.getZoom());
 					context.lineTo(t.x,t.y);
 				}
-				this.staticTrackN = i-1;
+				this.staticTrackN = this.preparedTrack.length-1;
 			}
 			else if (type == "getTrackBufferNewLines") {
 				var lines = [];
