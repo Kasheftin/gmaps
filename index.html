@@ -15,6 +15,7 @@
     <![endif]-->
   </head>
   <body>
+    <div class="loading" data-bind="style:{opacity:isVisible()?'0':'1'}"></div>
     <div class="container" style="display:none;opacity:0;" data-bind="visible:isReady,style:{opacity:isVisible()?'1':'0'}">
       <div class="header">
         <h3>Markers animation test</h3>

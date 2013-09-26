@@ -40,3 +40,17 @@ input[type="checkbox"]:focus {
 	margin-left: -14px;
     text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
 }
+
+.loading {
+	background: transparent url("clock.gif") 0 0 no-repeat;
+	position: absolute;
+	pointer-events: none;
+	top: 50%;
+	left: 50%;
+	width: 64px;
+	height: 64px;
+	margin-left: -32px;
+	margin-top: -32px;
+	opacity: 1;
+	transition: opacity 1s ease;
+}
