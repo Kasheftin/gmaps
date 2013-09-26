@@ -1,0 +1,4 @@
+gmaps
+=====
+
+Markers animation test
