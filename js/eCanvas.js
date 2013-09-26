@@ -6,7 +6,9 @@ define(["gmaps","knockout","underscore","./overlays/canvasOverlay","eCanvasMarke
 		this.showTracks = options.showTracks;
 		this.optimizeGeoCalculations = options.optimizeGeoCalculations;
 		this.useSecondCanvas = options.useSecondCanvas;
+		this.coloredTracks = options.coloredTracks;
 		this.prepareIcons = options.prepareIcons;
+		this.simplifyTracks = options.simplifyTracks;
 		this.appMarkers = options.markers;
 		this.appCallback = options.callback;
 
@@ -18,14 +20,16 @@ define(["gmaps","knockout","underscore","./overlays/canvasOverlay","eCanvasMarke
 				return new Marker(m,{
 					map: self.map,
 					prepareIcons: self.prepareIcons,
-					optimizeGeoCalculations: self.optimizeGeoCalculations
+					optimizeGeoCalculations: self.optimizeGeoCalculations,
+					simplifyTracks: self.simplifyTracks
 				});
 			},
 			onRemove: function(m) {
 				m.destroy();
 			},
 			afterRemove: function() {
-				self.resetStaticOverlay();
+				self.resetTracks();
+				self.render();
 			}
 		});
 
@@ -53,32 +57,29 @@ define(["gmaps","knockout","underscore","./overlays/canvasOverlay","eCanvasMarke
 				self.staticOverlay.relayout();
 			if (self.overlay)
 				self.overlay.relayout();
-			self.resetStaticOverlay();
+			self.resetTracks();
 			self.render();
 		});	
 		this.useSecondCanvasSubscribe = this.useSecondCanvas.subscribe(function() {
-			self.resetStaticOverlay();
-			self.render();
-		});
-		this.showTracksSubscribe = this.showTracks.subscribe(function() {
-			self.resetStaticOverlay();
-			self.render();
-		});
-		this.optimizeGeoCalculationsSubscribe = this.optimizeGeoCalculations.subscribe(function() {
-			_.each(self.markers,function(marker) {
-				marker.updateCoordsRequired = true;
-			});
 			self.resetTracks();
 			self.render();
 		});
-	}
-
-	CanvasEngine.prototype.resetStaticOverlay = function() {
-		_.each(this.markers,function(marker) {
-			marker.staticTrackN = 0;
+		this.showTracksSubscribe = this.showTracks.subscribe(function() {
+			self.resetTracks();
+			self.render();
 		});
-		this.staticOverlay.clear();
-		this.staticContext.lineWidth = 3;
+		this.optimizeGeoCalculationsSubscribe = this.optimizeGeoCalculations.subscribe(function() {
+			self.resetTracks();
+			self.render();
+		});
+		this.simplifyTracksSubscribe = this.simplifyTracks.subscribe(function() {
+			self.resetTracks();
+			self.render();
+		});
+		this.coloredTracksSubscribe = this.coloredTracks.subscribe(function() {
+			self.resetTracks();
+			self.render();
+		});
 	}
 
 	CanvasEngine.prototype.render = function(key,callback) {
@@ -87,22 +88,45 @@ define(["gmaps","knockout","underscore","./overlays/canvasOverlay","eCanvasMarke
 		this._lastKey = key;
 
 		if (this.staticOverlay && this.staticContext && this.useSecondCanvas() && this.showTracks()) {
-			this.staticContext.beginPath();
-			_.each(this.markers,function(marker) {
-				marker.draw(self.staticOverlay,self.staticContext,"staticTrackUpdate",key);
-			});
-			this.staticContext.stroke();
+			if (this.coloredTracks()) {
+				_.each(this.markers,function(marker) {
+					self.staticContext.strokeStyle = marker.color;
+					self.staticContext.beginPath();
+					marker.draw(self.staticOverlay,self.staticContext,"staticTrackUpdate",key);
+					self.staticContext.stroke();
+				});
+			}
+			else {
+				this.staticContext.strokeStyle = "#000000";
+				this.staticContext.beginPath();
+				_.each(this.markers,function(marker) {
+					marker.draw(self.staticOverlay,self.staticContext,"staticTrackUpdate",key);
+				});
+				this.staticContext.stroke();				
+			}
 		}
 
 		if (this.overlay && this.context) {
 			this.overlay.clear();
 			if (this.showTracks()) {
 				this.context.lineWidth = 3;
-				this.context.beginPath();
-				_.each(this.markers,function(marker) {
-					marker.draw(self.overlay,self.context,self.useSecondCanvas()?"trackEnd":"track",key);
-				});
-				this.context.stroke();
+				if (this.coloredTracks()) {
+					_.each(this.markers,function(marker) {
+						self.context.beginPath();
+						self.context.strokeStyle = marker.color;
+						self.context.beginPath();
+						marker.draw(self.overlay,self.context,self.useSecondCanvas()?"trackEnd":"track",key);
+						self.context.stroke();
+					});
+				}
+				else {
+					this.context.strokeStyle = "#000000";
+					this.context.beginPath();
+					_.each(this.markers,function(marker) {
+						marker.draw(self.overlay,self.context,self.useSecondCanvas()?"trackEnd":"track",key);
+					});
+					this.context.stroke();					
+				}
 			}
 			_.each(this.markers,function(marker) {
 				marker.draw(self.overlay,self.context,"icon",key);
@@ -117,21 +141,24 @@ define(["gmaps","knockout","underscore","./overlays/canvasOverlay","eCanvasMarke
 		_.each(this.markers,function(marker) {
 			marker.resetTrack();
 		});
-		this.resetStaticOverlay();
+		this.staticOverlay.clear();
+		this.staticContext.lineWidth = 3;
 	}
 
 	CanvasEngine.prototype.destroy = function() {
 		gmaps.event.removeListener(this.boundsListener);
 		this.syncSubscribe.dispose();
 		this.useSecondCanvasSubscribe.dispose();
+		this.optimizeGeoCalculationsSubscribe.dispose();
+		this.coloredTracksSubscribe.dispose();
 		this.showTracksSubscribe.dispose();
+		this.simplifyTracksSubscribe.dispose();
 		_.each(this.markers,function(marker) {
 			marker.destroy();
 		});
+		this.resetTracks();
 		this.overlay.setMap(null);
-		this.resetStaticOverlay();
 		this.staticOverlay.setMap(null);
-		this.optimizeGeoCalculationsSubscribe.dispose();
 	}
 
 	return CanvasEngine;

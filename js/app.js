@@ -27,8 +27,12 @@ define(["knockout","underscore","gmaps","marker","eNative","eDivs","eCanvas","eC
 		this.holdProb = ko.observable(0.2);
 		this.showTracks = ko.observable(true);
 		this.showBounds = ko.observable(false);
+		this.coloredTracks = ko.observable(false);
 		this.optimizeGeoCalculations = ko.observable(true);
 		this.useSecondCanvas = ko.observable(true);
+		this.useSecondPolyline = ko.observable(true);
+		this.simplifyTracks = ko.observable(true);
+		this.simplifyTracksPrecision = ko.observable(5);
 		this.prepareIcons = ko.observable(true);
 		this.animate = ko.observable(true);
 		this.fps = ko.observable(0);
@@ -73,8 +77,12 @@ define(["knockout","underscore","gmaps","marker","eNative","eDivs","eCanvas","eC
 				showTracks: self.showTracks,
 				optimizeGeoCalculations: self.optimizeGeoCalculations,
 				useSecondCanvas: self.useSecondCanvas,
+				useSecondPolyline: self.useSecondPolyline,
 				prepareIcons: self.prepareIcons,
+				simplifyTracks: self.simplifyTracks,
+				coloredTracks: self.coloredTracks,
 				callback: function() {
+					self.markers.valueHasMutated();
 					self.run();
 				}
 			}
@@ -204,13 +212,15 @@ define(["knockout","underscore","gmaps","marker","eNative","eDivs","eCanvas","eC
 		_.each(this.markers(),function(marker) {
 			marker.reset();
 		});
-		this.engine.resetTracks();
+		if (this.engine && typeof this.engine.resetTracks === "function") {
+			this.engine.resetTracks();
+		}
 		this.run();
 	}
 
 	App.prototype.resetTracks = function() {
 		_.each(this.markers(),function(marker) {
-			marker.resetTrack();
+			marker.destroyTrack();
 		});
 		if (this.engine && typeof this.engine.resetTracks === "function") {
 			this.engine.resetTracks();

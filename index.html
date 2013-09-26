@@ -40,9 +40,11 @@
                 </div>
                 <!-- ko if: engineName() == "native" -->
                   <div class="help-block">Native engine uses google maps markers and google maps polylines as markers tracks.</div>
+                  <div class="checkbox"><label><input type="checkbox" data-bind="checked:useSecondPolyline"> Use second polyline for storing static track part</label></div>
                 <!-- /ko -->
                 <!-- ko if: engineName() == "divs" -->
                   <div class="help-block">Div engine uses custom overlay and draws each marker as a small div, tracks (if shown) use native google maps polylines.</div>
+                  <div class="checkbox"><label><input type="checkbox" data-bind="checked:useSecondPolyline"> Use second polyline for storing static track part</label></div>
                   <div class="checkbox"><label><input type="checkbox" data-bind="checked:optimizeGeoCalculations"> Optimize geo calculations</label></div>
                 <!-- /ko -->
                 <!-- ko if: engineName() == "canvas" -->
@@ -50,16 +52,17 @@
                   <div class="checkbox"><label><input type="checkbox" data-bind="checked:useSecondCanvas"> Use second canvas layer for storing static tracks</label></div>
                   <div class="checkbox"><label><input type="checkbox" data-bind="checked:prepareIcons"> Prepare and cache canvas icons</label></div>
                   <div class="checkbox"><label><input type="checkbox" data-bind="checked:optimizeGeoCalculations"> Optimize geo calculations</label></div>
+                  <div class="checkbox"><label><input type="checkbox" data-bind="checked:simplifyTracks"> Use simplify.js from Leaflet with 10px precision</label></div>
                 <!-- /ko -->          
                 <!-- ko if: engineName() == "canvasTile" -->
                   <div class="help-block">Canvas tile engine splits one big canvas to tiles and uses custom map type. The advantage is that tiles with tracks do not redraw on map drag.</div>
                   <div class="checkbox"><label><input type="checkbox" data-bind="checked:useSecondCanvas"> Use canvas tile layer for storing static tracks</label></div>
                   <div class="checkbox"><label><input type="checkbox" data-bind="checked:prepareIcons"> Prepare and cache canvas icons</label></div>
                   <div class="checkbox"><label><input type="checkbox" data-bind="checked:optimizeGeoCalculations"> Optimize geo calculations</label></div>
+                  <div class="checkbox"><label><input type="checkbox" data-bind="checked:simplifyTracks"> Use simplify.js from Leaflet with 10px precision</label></div>
                 <!-- /ko -->          
                 <div class="checkbox"><label><input type="checkbox" data-bind="checked:showTracks"> Show tracks</label></div>
                 <div class="checkbox"><label><input type="checkbox" data-bind="checked:animate"> Animate markers</label></div>
-                <div class="checkbox"><label><input type="checkbox" data-bind="checked:showBounds"> Show bounds</label></div>
               </fieldset>
             </form>
           </div>
@@ -68,7 +71,7 @@
           <div class="menu-block">
             <form class="form-horizontal" role="form">
               <fieldset>
-                <legend>Markers settings</legend>
+                <legend>Generator settings</legend>
                 <div class="form-group">
                   <label class="col-lg-4 control-label" for="amount">Total amount</label>
                   <div class="col-lg-3">
@@ -109,7 +112,7 @@
         </div>
       </div>
       <div class="menu-block">
-        <form class="form-horizontal" role="form">
+        <form class="form-inline" role="form">
           <fieldset>
             <legend>Measurer</legend>
             <div class="clearfix">
@@ -121,6 +124,8 @@
                 </span>
               </div>
               <div class="pull-right">
+                <span class="checkbox"><label><input type="checkbox" data-bind="checked:coloredTracks"> ColoredTracks</label></span>
+                <span class="checkbox"><label><input type="checkbox" data-bind="checked:showBounds"> Show bounds</label></span>
                 <button class="btn btn-default" data-bind="click:fitBounds">Fit bounds</button>
                 <button class="btn btn-default" data-bind="click:resetTracks">Reset tracks</button>
                 <button class="btn btn-default" data-bind="click:resetMarkers">Reset markers</button>
