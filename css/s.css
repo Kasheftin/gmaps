@@ -3,6 +3,16 @@
 	transition: opacity 1s ease;
 }
 
+.art-container {
+	width: 910px;
+	margin-top: 50px;
+	font-family: Verdana,sans-serif;
+    font-size: 13px;
+    line-height: 160%;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
 .header,.menu-block,.map-container {
 	border: 1px solid #dddddd;
 	border-radius: 4px;

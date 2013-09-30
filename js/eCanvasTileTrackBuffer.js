@@ -83,8 +83,6 @@ define(function() {
 								var t = this.tiles[xI+"_"+yI];
 								if (!t) continue;
 								if (mode=="newTiles" && !this.newTilesIndex[xI+"_"+yI]) continue;
-
-
 								if (!tiles2fill[xI+"_"+yI]) {
 									if (this.coloredTracks())
 										t.context.strokeStyle = this.coloredTracks() ? line.color : "#000000";
@@ -102,7 +100,6 @@ define(function() {
 				if (mode=="newLines") {
 					line.dataI = line.data.length-1;
 				}
-
 				if (this.coloredTracks())
 					for (var i in tiles2fill)
 						this.tiles[i].context.stroke();
