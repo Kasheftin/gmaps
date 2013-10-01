@@ -19,7 +19,7 @@ define(["gmaps","eventEmitter"],function(gmaps,EventEmitter) {
 		tile.canvas = ownerDocument.createElement("canvas");
 		tile.canvas.style.pointerEvents = "none";
     	tile.canvas.style.webkitTransform = "translate3d(0,0,0)"; // turn on hw acceleration
-	 	tile.canvas.style.imageRendering = "optimizeSpeed";
+//	 	tile.canvas.style.imageRendering = "optimizeSpeed";
 	 	tile.canvas.width = tile.size;
 	 	tile.canvas.height = tile.size;
 	 	tile.canvas.tile = tile;
