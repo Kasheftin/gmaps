@@ -9,3 +9,4 @@ We show several technics to place and manage markers and tracks on google map v3
 * Custom canvas overlay that holds markers and custom canvas map type that holds tracks 
 
 [Demo](http://kasheftin.github.io/gmaps/)
+[Habrahabr article](http://habrahabr.ru/post/195950/)
